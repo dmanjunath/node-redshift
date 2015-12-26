@@ -50,5 +50,6 @@ node_modules/node-redshift/bin/node-redshift db:migrate
 - Model checking prior to queries to verify property name and type
 - Simple ORM to add basic CRUD
 - Add class & instance methods to model
+
 ## License
 MIT
