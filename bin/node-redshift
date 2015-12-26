@@ -2,13 +2,6 @@
 var commander = require('commander');
 var migrate = require('../lib/migration.js');
 
-
-// create migrations
-// run migrations
-// undo migrations
-
-// create model
-
 commander
   .version('0.0.1')
   .option('migration:create [name]', 'Create a new Redshift migration [name]')
@@ -18,12 +11,13 @@ commander
 
 if(commander['migration:create']){
   var fileName = undefined;
-  // console.log(commander['migration:create'], typeof commander['migration:create']);
   if(commander["migration:create"] && commander["migration:create"] !== true) fileName = commander["migration:create"];
   migrate.create(fileName);
 }
+
 else if(commander['db:migrate']){
   migrate.up();
 }
-else if(commander['model:create']) console.log('running migration');
+
+else if(commander['model:create']) console.log('Creating models is currently unsupported.');
 else console.log("Invalid command line arguments. Please run `node-redshift --help` for more help on commands");
