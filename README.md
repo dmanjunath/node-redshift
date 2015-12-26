@@ -40,14 +40,14 @@ There's a CLI with options for easy migration management. Creating a migration w
 WARNING!!! IF YOU HAVE SEPARATE DEV AND PROD REDSHIFT INSTANCES, DO NOT COMMIT THE `.migrate` FILE TO YOUR VCS OR DEPLOY TO YOUR SERVERS. YOU'LL NEED A NEW VERSION OF THIS FILE FOR EVERY INSTANCE OF REDSHIFT.
 ```javascript
 //Create a new migration file in redshift_migrations/ folder
-node_modules/node-redshift/bin/node-redshift migration:create
+node_modules/.bin/node-redshift migration:create
 
 //Run all remaining migrations on database
-node_modules/node-redshift/bin/node-redshift db:migrate
+node_modules/.bin/node-redshift db:migrate
 ```
 
 ## Upcoming features
-- Create models through CLI like migrations
+- Create models through CLI just like migrations
 - Ability to customize location of `.migrate` file or even from S3
 - Model checking prior to queries to verify property name and type
 - Simple ORM to add basic CRUD

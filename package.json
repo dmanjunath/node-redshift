@@ -1,6 +1,6 @@
 {
   "name": "node-redshift",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A simple collection of tools to help you get started with Amazon Redshift from node.js",
   "main": "index.js",
   "dependencies": {
@@ -15,6 +15,14 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "redshift",
+    "aws",
+    "node redshift"
+  ],
+  "bin": {
+    "node-redshift": "./bin/node-redshift"
   },
   "author": "Dheeraj Manjunath @dmanjunath",
   "license": "MIT"
