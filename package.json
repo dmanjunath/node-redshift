@@ -13,5 +13,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dheeraj Manjunath @dmanjunath",
-  "license": "ISC"
+  "license": "MIT"
 }
