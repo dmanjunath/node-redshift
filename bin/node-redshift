@@ -4,7 +4,7 @@ var migrate = require('../lib/migration.js');
 
 commander
   .version('0.0.1')
-  .option('migration:create [name]', 'Create a new Redshift migration [name]')
+  .option('migration:create [name]', 'Create a new Redshift migration')
   .option('db:migrate', 'Run all migrations against your Redshift database')
   .option('model:create', 'Create a new Redshift model')
   .parse(process.argv);

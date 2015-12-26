@@ -1,6 +1,6 @@
 {
   "name": "node-redshift",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A simple collection of tools to help you get started with Amazon Redshift from node.js",
   "main": "index.js",
   "dependencies": {
