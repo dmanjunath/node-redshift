@@ -1,0 +1,17 @@
+{
+  "name": "node-redshift",
+  "version": "1.0.0",
+  "description": "A simple collection of tools to help you get started with Amazon Redshift from node.js",
+  "main": "index.js",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "migrate": "^0.2.2",
+    "pg": "^4.4.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dheeraj Manjunath @dmanjunath",
+  "license": "ISC"
+}
