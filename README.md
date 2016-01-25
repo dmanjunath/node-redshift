@@ -55,7 +55,6 @@ node_modules/.bin/node-redshift migration:create <filename>
 A model will look like this
 ```
 'use strict';
-  var orm = require('pg-orm');
   var person = {
     'tableName': 'people',
     'tableProperties': {
