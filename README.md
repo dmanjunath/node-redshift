@@ -2,7 +2,7 @@
 This package is a simple wrapper for common functionality you want when using Redshift. It can do
 - Redshift connections & querying
 - Creating and running migrations
-- Create and manage models(upcoming)
+- Create and manage models
 
 Warning!!!!!! This is new and still under development. The API is bound to change. Use at your own risk.
 
@@ -46,11 +46,90 @@ node_modules/.bin/node-redshift migration:create
 node_modules/.bin/node-redshift db:migrate
 ```
 
+## Creating Models
+### Creating a model using the command line
+```
+node_modules/.bin/node-redshift migration:create <filename>
+```
+
+A model will look like this
+```
+'use strict';
+  var orm = require('pg-orm');
+  var person = {
+    'tableName': 'people',
+    'tableProperties': {
+      'id': {
+        'type': 'key'
+      },
+      'name': { 
+        'type': 'string',
+        'required': true
+      },
+      'email': { 
+        'type': 'string',
+        'required': true
+      }
+    }
+  };
+  module.exports = person;
+```
+### Importing and using model with ORM
+Import a model into a file as such
+```
+var redshift = require("../redshift.js");
+var person = redshift.import("./redshift_models/person.js");
+
+person.create({name: 'Dheeraj', email: 'dheeraj@email.com'}, function(err, data){
+    if(err) throw err;
+    else{
+      console.log(data);
+    }
+  });
+```
+
+### ORM API
+There are 4 functions supported by the ORM
+```
+/**
+ * create a new instance of object
+ * @param  {Object}   data Object with keys/values to create in database. keys are column names, values are data
+ * @param  {Function} cb   
+ * @return {Object}        Object that's inserted into redshift
+ */
+Person.create({emailAddress: 'dheeraj@email.com', name: 'Dheeraj'}, function(err, data){
+  if(err) throw err;
+  else console.log(data);
+});
+ 
+/**
+ * update an existing item in redshift
+ * @param  {Object}   whereClause The properties that identify the rows to update. Essentially the WHERE clause in the UPDATE statement
+ * @param  {Object}   data        Properties to overwrite in the record
+ * @param  {Function} callback    
+ * @return {Object}               Object that's updated in redshift
+ *
+ */
+Person.update({id: 72}, {emailAddress: 'dheeraj@email.com', name: 'Dheeraj'}, function(err, data){
+  if(err) throw err;
+  else console.log(data);
+});
+
+/**
+ * delete rows from redshift
+ * @param  {Object}   whereClause The properties that identify the rows to update. Essentially the WHERE clause in the UPDATE statement
+ * @param  {Function} cb   
+ * @return {Object}        Object that's deleted from redshift
+ */
+Person.delete({emailAddress: 'dheeraj@email.com', name: 'Dheeraj'}, function(err, data){
+  if(err) throw err;
+  else console.log(data);
+});
+```
+
 ## Upcoming features
-- Create models through CLI just like migrations
 - Ability to customize location of `.migrate` file or even from S3
 - Model checking prior to queries to verify property name and type
-- Simple ORM to add basic CRUD
 - Add class & instance methods to model
 
 ## License
