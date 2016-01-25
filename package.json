@@ -20,7 +20,8 @@
   "keywords": [
     "redshift",
     "aws",
-    "node redshift"
+    "node redshift",
+    "aws redshfit"
   ],
   "bin": {
     "node-redshift": "./bin/node-redshift"
