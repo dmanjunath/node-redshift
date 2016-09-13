@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * README.md file in the root directory of this source tree.
+ */
+
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 
@@ -26,10 +34,28 @@ var Query = function(config, values, callback) {
   this._result = new Result(config.rowMode, config.types);
   this.isPreparedStatement = false;
   this._canceledDueToError = false;
+  this._promise = null;
   EventEmitter.call(this);
 };
 
 util.inherits(Query, EventEmitter);
+
+Query.prototype.then = function(onSuccess, onFailure) {
+  return this.promise().then(onSuccess, onFailure);
+};
+
+Query.prototype.catch = function(callback) {
+  return this.promise().catch(callback);
+};
+
+Query.prototype.promise = function() {
+  if (this._promise) return this._promise;
+  this._promise = new Promise(function(resolve, reject) {
+    this.once('end', resolve);
+    this.once('error', reject);
+  }.bind(this));
+  return this._promise;
+};
 
 Query.prototype.requiresPreparation = function() {
   //named queries must always be prepared
@@ -52,14 +78,13 @@ Query.prototype.requiresPreparation = function() {
 //metadata used when parsing row results
 Query.prototype.handleRowDescription = function(msg) {
   this._result.addFields(msg.fields);
+  this._accumulateRows = this.callback || !this.listeners('row').length;
 };
 
 Query.prototype.handleDataRow = function(msg) {
   var row = this._result.parseRow(msg.fields);
   this.emit('row', row, this._result);
-
-  //if there is a callback collect rows
-  if(this.callback) {
+  if (this._accumulateRows) {
     this._result.addRow(row);
   }
 };
@@ -146,11 +171,8 @@ Query.prototype.prepare = function(connection) {
     }, true);
   }
 
-  //TODO is there some better way to prepare values for the database?
   if(self.values) {
-    for(var i = 0, len = self.values.length; i < len; i++) {
-      self.values[i] = utils.prepareValue(self.values[i]);
-    }
+    self.values = self.values.map(utils.prepareValue);
   }
 
   //http://developer.postgresql.org/pgdocs/postgres/protocol-flow.html#PROTOCOL-FLOW-EXT-QUERY

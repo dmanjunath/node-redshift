@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * README.md file in the root directory of this source tree.
+ */
+
 var types = require('pg-types');
 
 //result object returned from query
@@ -70,7 +78,10 @@ var inlineParser = function(fieldName, i) {
     //fields containing single quotes will break
     //the evaluated javascript unless they are escaped
     //see https://github.com/brianc/node-postgres/issues/507
-    fieldName.replace("'", "\\'") +
+    //Addendum: However, we need to make sure to replace all
+    //occurences of apostrophes, not just the first one.
+    //See https://github.com/brianc/node-postgres/issues/934
+    fieldName.replace(/'/g, "\\'") +
     "'] = " +
     "rowData[" + i + "] == null ? null : parsers[" + i + "](rowData[" + i + "]);";
 };

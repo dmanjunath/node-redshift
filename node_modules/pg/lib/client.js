@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * README.md file in the root directory of this source tree.
+ */
+
 var crypto = require('crypto');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
@@ -25,7 +33,8 @@ var Client = function(config) {
 
   this.connection = c.connection || new Connection({
     stream: c.stream,
-    ssl: this.connectionParameters.ssl
+    ssl: this.connectionParameters.ssl,
+    keepAlive: c.keepAlive || false
   });
   this.queryQueue = [];
   this.binary = c.binary || defaults.binary;
@@ -84,7 +93,7 @@ Client.prototype.connect = function(callback) {
   //password request handling
   con.on('authenticationMD5Password', checkPgPass(function(msg) {
     var inner = Client.md5(self.password + self.user);
-    var outer = Client.md5(inner + msg.salt.toString('binary'));
+    var outer = Client.md5(Buffer.concat([new Buffer(inner), msg.salt]));
     var md5password = "md5" + outer;
     con.password(md5password);
   }));
@@ -327,8 +336,11 @@ Client.prototype.query = function(config, values, callback) {
   return query;
 };
 
-Client.prototype.end = function() {
+Client.prototype.end = function(cb) {
   this.connection.end();
+  if (cb) {
+    this.connection.once('end', cb);
+  }
 };
 
 Client.md5 = function(string) {

@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * README.md file in the root directory of this source tree.
+ */
+
 var url = require('url');
 var dns = require('dns');
 
@@ -34,14 +42,20 @@ var useSsl = function() {
 };
 
 var ConnectionParameters = function(config) {
+  //if a string is passed, it is a raw connection string so we parse it into a config
   config = typeof config == 'string' ? parse(config) : (config || {});
+  //if the config has a connectionString defined, parse IT into the config we use
+  //this will override other default values with what is stored in connectionString
+  if(config.connectionString) {
+    config = parse(config.connectionString);
+  }
   this.user = val('user', config);
   this.database = val('database', config);
   this.port = parseInt(val('port', config), 10);
   this.host = val('host', config);
   this.password = val('password', config);
   this.binary = val('binary', config);
-  this.ssl = config.ssl || useSsl();
+  this.ssl = typeof config.ssl === 'undefined' ? useSsl() : config.ssl;
   this.client_encoding = val("client_encoding", config);
   //a domain socket begins with '/'
   this.isDomainSocket = (!(this.host||'').indexOf('/'));
