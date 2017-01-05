@@ -6,7 +6,7 @@
   "dependencies": {
     "commander": "^2.9.0",
     "migrate": "^0.2.2",
-    "pg": "^6.1.0",
+    "pg": "^6.1.2",
     "sql-bricks": "^1.2.3"
   },
   "repository": {
