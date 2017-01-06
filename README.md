@@ -28,6 +28,7 @@ module.exports = redshiftClient;
 You can either initialize a raw one time connection and close it after a single query, or you can open a connection pool and leave it open while your application is running.
 
 ##### ***By default node-redshift uses connection pooling
+##### ***If you want to close a redshift connection by hand you have to use raw connection, you can't end a pool
 #### 
 ##### rawConnection
 Pass in the rawConnection parameter in the redshift instantiation options to specify a raw connection.
@@ -35,6 +36,7 @@ Pass in the rawConnection parameter in the redshift instantiation options to spe
 var redshiftClient = new Redshift(client, {rawConnection: true});
 ```
 #### Usage
+Please see examples/ folder for full code examples.
 ##### Default connection
 The redshift.js file exports a Redshift object which has a `query()` function bound to it you can call with the string of a sql query. I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build queries.
 ```javascript
