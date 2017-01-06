@@ -20,11 +20,22 @@ var client = {
   host: host,
 };
 
-var redshiftClient = new Redshift(client);
+var redshiftClient = new Redshift(client, options);
 
 module.exports = redshiftClient;
 ```
+#### Connection pooling vs raw connections
+You can either initialize a raw one time connection and close it after a single query, or you can open a connection pool and leave it open while your application is running.
+
+##### ***By default node-redshift uses connection pooling
+#### 
+##### rawConnection
+Pass in the rawConnection parameter in the redshift instantiation options to specify a raw connection.
+```javascript
+var redshiftClient = new Redshift(client, {rawConnection: true});
+```
 #### Usage
+##### Default connection
 The redshift.js file exports a Redshift object which has a `query()` function bound to it you can call with the string of a sql query. I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build queries.
 ```javascript
 var redshiftClient = require('./redshift.js');
@@ -32,6 +43,27 @@ var redshiftClient = require('./redshift.js');
 // options is an optional object with one property so far {raw: true} returns 
 // just the data from redshift. {raw: false} returns the data with the pg object
 redshiftClient.query(queryString, [options], callback);
+```
+
+##### Raw connection(using {rawConnection: true})
+The redshift.js file exports a Redshift object which has a `query()` function bound to it you can call with the string of a sql query. I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build queries.
+```javascript
+var redshiftClient = require('./redshift.js');
+
+// options is an optional object with one property so far {raw: true} returns 
+// just the data from redshift. {raw: false} returns the data with the pg object
+redshiftClient.connect(function(err){
+  if(err) throw err;
+  else{
+    redshiftClient.query('SELECT * FROM "TableName"', options, function(err, data){
+      if(err) throw err;
+      else{
+        console.log(data);
+        redshiftClient.close();
+      }
+    });
+  }
+});
 ```
 
 #### CLI usage to create and run migrations
