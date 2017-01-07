@@ -28,7 +28,7 @@ module.exports = redshiftClient;
 You can either initialize a raw one time connection and close it after a single query, or you can open a connection pool and leave it open while your application is running.
 
 ##### ***By default node-redshift uses connection pooling
-##### ***If you want to close a redshift connection by hand you have to use raw connection, you can't end a pool
+
 #### 
 ##### rawConnection
 Pass in the rawConnection parameter in the redshift instantiation options to specify a raw connection.
@@ -126,7 +126,7 @@ There are 4 functions supported by the ORM
 ```
 /**
  * create a new instance of object
- * @param  {Object}   data Object with keys/values to create in database. keys are column names, values are data
+ * @param  {Object or Array}   data Object/Array with keys/values to create in database. keys are column names, values are data
  * @param  {Function} cb   
  * @return {Object}        Object that's inserted into redshift
  */
