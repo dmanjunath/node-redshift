@@ -7,6 +7,7 @@ commander
   .version('0.0.1')
   .option('migration:create [name]', 'Create a new Redshift migration')
   .option('db:migrate', 'Run all migrations against your Redshift database')
+  .option('db:migrate:undo', 'Undo last migration against your Redshift database')
   .option('model:create [name]', 'Create a new Redshift model')
   .parse(process.argv);
 
@@ -18,6 +19,10 @@ if(commander['migration:create']){
 
 else if(commander['db:migrate']){
   migrate.up();
+}
+
+else if(commander['db:migrate:undo']){
+  migrate.down();
 }
 
 else if(commander['model:create']){
