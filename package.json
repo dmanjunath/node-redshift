@@ -4,6 +4,7 @@
   "description": "A simple collection of tools to help you get started with Amazon Redshift from node.js",
   "main": "index.js",
   "dependencies": {
+    "bluebird": "^3.5.0",
     "commander": "^2.9.0",
     "migrate": "^0.2.2",
     "pg": "^6.1.2",
