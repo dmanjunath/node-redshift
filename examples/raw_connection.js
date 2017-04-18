@@ -10,15 +10,33 @@ var client = {
 
 var redshift = new Redshift(client, {rawConnection: true});
 
-redshift.connect(function(err){ //create connection manually
-  if(err) throw err;
-  else{
-    redshift.query('SELECT * FROM "Tags"', {raw: true}, function(err, data){ //query redshift
-      if(err) throw err;
-      else{
-        console.log(data);
-        redshift.close(); //close connection manually
-      }
-    });
-  }
-});
+// using callbacks
+// redshift.connect(function(err){ //create connection manually
+//   if(err) throw err;
+//   else{
+//     redshift.query('SELECT * FROM "Tags"', {raw: true}, function(err, data){ //query redshift
+//       if(err) throw err;
+//       else{
+//         console.log(data);
+
+//         redshift.close();
+//       }
+//     });
+//   }
+// });
+
+// using promises
+// redshift.connect(function(err){ //create connection manually
+//   if(err) throw err;
+//   else{
+    
+//     redshift.query('SELECT * FROM "Tags"', {raw: true})
+//     .then(function(data){ //query redshift
+//       console.log(data);
+
+//       redshift.close();
+//     }, function(err){
+//       throw err;
+//     });
+//   }
+// });
