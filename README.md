@@ -45,6 +45,9 @@ var redshiftClient = require('./redshift.js');
 // options is an optional object with one property so far {raw: true} returns 
 // just the data from redshift. {raw: false} returns the data with the pg object
 redshiftClient.query(queryString, [options], callback);
+
+// if you prefer promises to callbacks, you can use the queryPromise which returns a thenable.
+redshiftClient.queryPromise(queryString, [options]);
 ```
 
 ##### Raw connection(using {rawConnection: true})
