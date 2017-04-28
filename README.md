@@ -1,21 +1,21 @@
 ## Navigation
 
-#### [Overview](https://github.com/dmanjunath/node-redshift#overview)
+#### [Overview](https://github.com/dmanjunath/node-redshift#overview-1)
 
-#### [Installation](https://github.com/dmanjunath/node-redshift#installation)
+#### [Installation](https://github.com/dmanjunath/node-redshift#installation-1)
 
-#### [Setup](https://github.com/dmanjunath/node-redshift#setup)
+#### [Setup](https://github.com/dmanjunath/node-redshift#setup-1)
 
-#### [Usage](https://github.com/dmanjunath/node-redshift#usage)
+#### [Usage](https://github.com/dmanjunath/node-redshift#usage-1)
 
-- #### [API](https://github.com/dmanjunath/node-redshift#overview)
-- #### [CLI](https://github.com/dmanjunath/node-redshift#overview)
-- #### [Models](https://github.com/dmanjunath/node-redshift#overview)
-- #### [ORM](https://github.com/dmanjunath/node-redshift#overview)
+- #### [Query API](https://github.com/dmanjunath/node-redshift#query-api-2)
+- #### [CLI](https://github.com/dmanjunath/node-redshift#cli-2)
+- #### [Models](https://github.com/dmanjunath/node-redshift#models-2)
+- #### [ORM](https://github.com/dmanjunath/node-redshift#orm-api)
 
-#### [Upcoming Features](https://github.com/dmanjunath/node-redshift#upcoming-features)
+#### [Upcoming Features](https://github.com/dmanjunath/node-redshift#upcoming-features-1)
 
-#### [License](https://github.com/dmanjunath/node-redshift#license)
+#### [License](https://github.com/dmanjunath/node-redshift#license-1)
 
 ## Overview
 This package is a simple wrapper for common functionality you want when using Redshift. It can do
@@ -26,7 +26,7 @@ This package is a simple wrapper for common functionality you want when using Re
 
 Warning!!!!!! This is new and still under development. The API is bound to change. Use at your own risk.
 
-# #Installation
+## Installation
 Install the package by running
 ```javascript
 npm install node-redshift
@@ -84,10 +84,10 @@ There are two options that can be passed into the options object in the Redshift
 
 ## Usage
 
-##### [Query API](https://github.com/dmanjunath/node-redshift#query-api)
-##### [CLI](https://github.com/dmanjunath/node-redshift#cli)
-##### [Models](https://github.com/dmanjunath/node-redshift#models)
-##### [ORM](https://github.com/dmanjunath/node-redshift#orm)
+#### [Query API](https://github.com/dmanjunath/node-redshift#query-api-2)
+#### [CLI](https://github.com/dmanjunath/node-redshift#cli-2)
+#### [Models](https://github.com/dmanjunath/node-redshift#models-2)
+#### [ORM](https://github.com/dmanjunath/node-redshift#orm-api)
 #
 ### Query API
 Please see examples/ folder for full code examples using both raw connections and connection pools.
