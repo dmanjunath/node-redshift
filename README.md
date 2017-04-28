@@ -1,13 +1,41 @@
+## Navigation
+
+#### [Overview](https://github.com/dmanjunath/node-redshift#overview)
+
+#### [Installation](https://github.com/dmanjunath/node-redshift#installation)
+
+#### [Setup](https://github.com/dmanjunath/node-redshift#setup)
+
+#### [Usage](https://github.com/dmanjunath/node-redshift#usage)
+
+- #### [API](https://github.com/dmanjunath/node-redshift#overview)
+- #### [CLI](https://github.com/dmanjunath/node-redshift#overview)
+- #### [Models](https://github.com/dmanjunath/node-redshift#overview)
+- #### [ORM](https://github.com/dmanjunath/node-redshift#overview)
+
+#### [Upcoming Features](https://github.com/dmanjunath/node-redshift#upcoming-features)
+
+#### [License](https://github.com/dmanjunath/node-redshift#license)
+
 ## Overview
 This package is a simple wrapper for common functionality you want when using Redshift. It can do
 - Redshift connections & querying
 - Creating and running migrations
 - Create and manage models
+- CRUD API with ORM wrapper with type validation
 
 Warning!!!!!! This is new and still under development. The API is bound to change. Use at your own risk.
 
+# #Installation
+Install the package by running
+```javascript
+npm install node-redshift
+```
+Link to npm repository https://www.npmjs.com/package/node-redshift
+
 ## Setup
-#### Establishing a Redshift connection and querying
+
+The code to connect to redshift should be something like this:
 ```javascript
 //redshift.js
 var Redshift = require('node-redshift');
@@ -20,71 +48,124 @@ var client = {
   host: host,
 };
 
-var redshiftClient = new Redshift(client, options);
+// The values passed in to the options object will be the difference between a connection pool and raw connection
+var redshiftClient = new Redshift(client, [options]);
 
 module.exports = redshiftClient;
 ```
-#### Connection pooling vs raw connections
-You can either initialize a raw one time connection and close it after a single query, or you can open a connection pool and leave it open while your application is running.
 
-##### ***By default node-redshift uses connection pooling
+There are two ways to setup a connection to redshift. 
+
+- [Connection Pooling](https://github.com/dmanjunath/node-redshift#connection-pooling) -  you can open a connection pool and open connections to Redshift which will be managed by pg-pool (https://github.com/brianc/node-pg-pool)
+- [Raw Connection](https://github.com/dmanjunath/node-redshift#raw-connection) - a one time connection you must manually initialize and close to run queries
+
+
+###### ***By default node-redshift uses connection pooling
 
 #### 
-##### rawConnection
-Pass in the rawConnection parameter in the redshift instantiation options to specify a raw connection.
-```javascript
-var redshiftClient = new Redshift(client, {rawConnection: true});
-```
-#### Usage
-Please see examples/ folder for full code examples.
-##### Default connection
-The redshift.js file exports a Redshift object which has a `query()` function bound to it you can call with the string of a sql query. I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build queries.
-```javascript
-var redshiftClient = require('./redshift.js');
+##### Raw Connection
+Pass in the rawConnection parameter in the redshift instantiation options to specify a raw connection. Raw connections need extra code to specify when to connect and disconnect from Redshift. [Here's an example of the raw connection query](https://github.com/dmanjunath/node-redshift/blob/master/examples/raw_connection.js)
 
-// options is an optional object with one property so far {raw: true} returns 
-// just the data from redshift. {raw: false} returns the data with the pg object
-redshiftClient.query(queryString, [options], callback);
+```javascript
+var redshiftClient = new Redshift(client, [options]);
 ```
 
-##### Raw connection(using {rawConnection: true})
-The redshift.js file exports a Redshift object which has a `query()` function bound to it you can call with the string of a sql query. I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build queries.
+##### Connection Pooling 
+Connection pooling works by default with no extra configuration. [Here's an example of connection pooling](https://github.com/dmanjunath/node-redshift/blob/master/examples/connection_pooling.js)
+
+##### Setup Options
+There are two options that can be passed into the options object in the Redshift constructor.
+
+| Option                | Type          | Description                                                                       |
+| --------------------- |:-------------:| ---------------------------------------------------------------------------------:|
+| rawConnection         | Boolean       | If you want a raw connection, pass true with this option                          |
+| longStackTraces       | Boolean       | Default: true. If you want to disable [bluebird's longStackTraces](http://bluebirdjs.com/docs/api/promise.longstacktraces.html), pass in false   |
+
+
+## Usage
+
+##### [Query API](https://github.com/dmanjunath/node-redshift#query-api)
+##### [CLI](https://github.com/dmanjunath/node-redshift#cli)
+##### [Models](https://github.com/dmanjunath/node-redshift#models)
+##### [ORM](https://github.com/dmanjunath/node-redshift#orm)
+#
+### Query API
+Please see examples/ folder for full code examples using both raw connections and connection pools.
+
+For those looking for a library to build robus, injection safe SQL, I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build query strings.
+
+Both Raw Connections and Connection Pool connections have a `query()` function that's bound to the initialized Redshift object. However, Raw Connections require additional connect and disconnect calls.
+
+All `query()` functions support **both callback and promise style**. If there's a function as a third argument, the callback will fire. If there's no third function argument, but instead (query, [options]).then({})... the promise will fire.
+
 ```javascript
+//raw connection
 var redshiftClient = require('./redshift.js');
 
-// options is an optional object with one property so far {raw: true} returns 
-// just the data from redshift. {raw: false} returns the data with the pg object
 redshiftClient.connect(function(err){
   if(err) throw err;
   else{
-    redshiftClient.query('SELECT * FROM "TableName"', options, function(err, data){
+    redshiftClient.query('SELECT * FROM "TableName"', [options], function(err, data){
       if(err) throw err;
       else{
         console.log(data);
         redshiftClient.close();
       }
     });
+    //instead of callbacks you can also use promises to get the data
   }
 });
 ```
+#
+```javascript
+//connection pool
+var redshiftClient = require('./redshift.js');
 
-#### CLI usage to create and run migrations
+// options is an optional object with one property so far {raw: true} returns 
+// just the data from redshift. {raw: false} returns the data with the pg object
+redshiftClient.query(queryString, [options])
+.then(function(data){
+    console.log(data);
+})
+.catch(function(err){
+    console.error(err);
+});;
+//instead of promises you can also use callbacks to get the data
+```
+##### Query Options 
+There's only a single query option so far. For the options object, the only valid option is {raw: true}, which returns just the data from redshift. {raw: false} or not specifying the value will return the data along with the entire pg object with data such as row count, table statistics etc.
+
+
+### CLI
 There's a CLI with options for easy migration management. Creating a migration will create a `redshift_migrations/` folder with a state file called `.migrate` in it which contains the state of your completed migrations. The .migrate file keeps track of which migrations have been run, and when you run db:migrate, it computes the migrations that have not yet been run on your Redshift instance and runs them and saves the state of `.migrate`
 
 WARNING!!! IF YOU HAVE SEPARATE DEV AND PROD REDSHIFT INSTANCES, DO NOT COMMIT THE `.migrate` FILE TO YOUR VCS OR DEPLOY TO YOUR SERVERS. YOU'LL NEED A NEW VERSION OF THIS FILE FOR EVERY INSTANCE OF REDSHIFT.
-```javascript
-//Create a new migration file in redshift_migrations/ folder
-node_modules/.bin/node-redshift migration:create
 
-//Run all remaining migrations on database
-node_modules/.bin/node-redshift db:migrate
-```
-
-## Creating Models
-### Creating a model using the command line
+##### Create a new migration file in redshift_migrations/ folder
+#
 ```
 node_modules/.bin/node-redshift migration:create <filename>
 ```
+
+##### Run all remaining migrations on database
+#
+```
+node_modules/.bin/node-redshift db:migrate <filename>
+```
+
+##### Undo last migration
+#
+```
+node_modules/.bin/node-redshift db:migrate:undo <filename>
+```
+
+##### Creating a model using the command line
+#
+```
+node_modules/.bin/node-redshift model:create <filename>
+```
+
+### Models
 
 A model will look like this
 ```
@@ -107,8 +188,9 @@ A model will look like this
   };
   module.exports = person;
 ```
-### Importing and using model with ORM
-Import a model into a file as such
+##### Importing and using model with ORM
+#
+There are two ways you could import and use redshift models. The first is using redshift.import in every file where you want to use the model ORM.
 ```
 var redshift = require("../redshift.js");
 var person = redshift.import("./redshift_models/person.js");
@@ -121,8 +203,32 @@ person.create({name: 'Dheeraj', email: 'dheeraj@email.com'}, function(err, data)
   });
 ```
 
+The alternative(my preferred way) is to abstract the import calls and export all the models with the redshift object right after initialization
+
+```
+//redshift.js
+...redshift connection code...
+
+var person = redshift.import("./redshift_models/person.js");
+redshift.models = {};
+redshift.models.person = person;
+
+module.exports = redshift;
+
+//usage in person.js
+var redshiftConnection = require('./redshift.js');
+var person = redshift.models.person;
+
+person.create({name: 'Dheeraj', email: 'dheeraj@email.com'}, function(err, data){
+    if(err) throw err;
+    else{
+      console.log(data);
+    }
+  });
+```
+
 ### ORM API
-There are 4 functions supported by the ORM
+There are 3 functions supported by the ORM
 ```
 /**
  * create a new instance of object
