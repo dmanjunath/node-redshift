@@ -67,7 +67,7 @@ There are two ways to setup a connection to redshift.
 Pass in the rawConnection parameter in the redshift instantiation options to specify a raw connection. Raw connections need extra code to specify when to connect and disconnect from Redshift. [Here's an example of the raw connection query](https://github.com/dmanjunath/node-redshift/blob/master/examples/raw_connection.js)
 
 ```javascript
-var redshiftClient = new Redshift(client, [options]);
+var redshiftClient = new Redshift(client, {rawConnection: true});
 ```
 
 ##### Connection Pooling 
@@ -168,7 +168,7 @@ node_modules/.bin/node-redshift model:create <filename>
 ### Models
 
 A model will look like this
-```
+```javascript
 'use strict';
   var person = {
     'tableName': 'people',
@@ -191,7 +191,7 @@ A model will look like this
 ##### Importing and using model with ORM
 #
 There are two ways you could import and use redshift models. The first is using redshift.import in every file where you want to use the model ORM.
-```
+```javascript
 var redshift = require("../redshift.js");
 var person = redshift.import("./redshift_models/person.js");
 
@@ -205,7 +205,7 @@ person.create({name: 'Dheeraj', email: 'dheeraj@email.com'}, function(err, data)
 
 The alternative(my preferred way) is to abstract the import calls and export all the models with the redshift object right after initialization
 
-```
+```javascript
 //redshift.js
 ...redshift connection code...
 
@@ -229,7 +229,7 @@ person.create({name: 'Dheeraj', email: 'dheeraj@email.com'}, function(err, data)
 
 ### ORM API
 There are 3 functions supported by the ORM
-```
+```javascript
 /**
  * create a new instance of object
  * @param  {Object or Array}   data Object/Array with keys/values to create in database. keys are column names, values are data
