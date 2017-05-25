@@ -92,11 +92,11 @@ There are two options that can be passed into the options object in the Redshift
 ### Query API
 Please see examples/ folder for full code examples using both raw connections and connection pools.
 
-For those looking for a library to build robus, injection safe SQL, I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build query strings.
+For those looking for a library to build robust, injection safe SQL, I like [sql-bricks](http://csnw.github.io/sql-bricks/) to build query strings.
 
-Both Raw Connections and Connection Pool connections have a `query()` function that's bound to the initialized Redshift object. However, Raw Connections require additional connect and disconnect calls.
+Both Raw Connections and Connection Pool connections have two query functions that are bound to the initialized Redshift object: `query()` and a `parameterizedQuery()`.
 
-All `query()` functions support **both callback and promise style**. If there's a function as a third argument, the callback will fire. If there's no third function argument, but instead (query, [options]).then({})... the promise will fire.
+All `query()` and `parameterizedQuery()` functions support **both callback and promise style**. If there's a function as a third argument, the callback will fire. If there's no third function argument, but instead (query, [options]).then({})... the promise will fire.
 
 ```javascript
 //raw connection
@@ -112,7 +112,6 @@ redshiftClient.connect(function(err){
         redshiftClient.close();
       }
     });
-    //instead of callbacks you can also use promises to get the data
   }
 });
 ```
@@ -129,9 +128,47 @@ redshiftClient.query(queryString, [options])
 })
 .catch(function(err){
     console.error(err);
-});;
+});
 //instead of promises you can also use callbacks to get the data
 ```
+
+##### Parameterized Queries 
+If you parameterize the SQL string yourself, you can call the `parameterizeQuery()` function 
+```javascript
+//connection pool
+var redshiftClient = require('./redshift.js');
+
+// options is an optional object with one property so far {raw: true} returns 
+// just the data from redshift. {raw: false} returns the data with the pg object
+redshiftClient.parameterizedQuery('SELECT * FROM "TableName" WHERE "parameter" = $1', [42], [options], function(err, data){
+  if(err) throw err;
+  else{
+    console.log(data);
+  }
+});
+//you can also use promises to get the data
+```
+
+##### Template Literal Queries 
+If you use template literals to write your SQL, you can use a tagged template parser like https://github.com/felixfbecker/node-sql-template-strings to parameterize the template literal
+```javascript
+//connection pool
+var redshiftClient = require('./redshift.js');
+var SQL = require('sql-template-strings');
+
+// options is an optional object with one property so far {raw: true} returns 
+// just the data from redshift. {raw: false} returns the data with the pg object
+let value = 42;
+
+redshiftClient.query(SQL`SELECT * FROM "TableName" WHERE "parameter" = ${value}`, [options], function(err, data){
+  if(err) throw err;
+  else{
+    console.log(data);
+  }
+});
+//you can also use promises to get the data
+```
+
 ##### Query Options 
 There's only a single query option so far. For the options object, the only valid option is {raw: true}, which returns just the data from redshift. {raw: false} or not specifying the value will return the data along with the entire pg object with data such as row count, table statistics etc.
 
