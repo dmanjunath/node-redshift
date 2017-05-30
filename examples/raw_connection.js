@@ -40,3 +40,13 @@ var redshift = new Redshift(client, {rawConnection: true});
 //     });
 //   }
 // });
+
+// you can also skip connecting and closing manually by using the rawQuery function which creates a new redshift instance temporarily,
+// connects to your db, makes a query, returns the data and disconnects from the database in one operation
+redshift.rawQuery(`SELECT * FROM "Tags"`, {raw: true})
+.then(function(data){
+  console.log(data); 
+})
+.catch(function(err){
+  console.log(err);
+});

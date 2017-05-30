@@ -169,6 +169,23 @@ redshiftClient.query(SQL`SELECT * FROM "TableName" WHERE "parameter" = ${value}`
 //you can also use promises to get the data
 ```
 
+##### `rawQuery()` 
+If you want to make a one time raw query, but you don't want to call connect & disconnect manually and you dont want to use conection pooling, you can use `rawQuery()`
+```javascript
+//connection pool
+var redshiftClient = require('./redshift.js');
+
+// options is an optional object with one property so far {raw: true} returns 
+// just the data from redshift. {raw: false} returns the data with the pg object
+redshiftClient.rawQuery('SELECT * FROM "TableName"', [options], function(err, data){
+  if(err) throw err;
+  else{
+    console.log(data);
+  }
+});
+//you can also use promises to get the data
+```
+
 ##### Query Options 
 There's only a single query option so far. For the options object, the only valid option is {raw: true}, which returns just the data from redshift. {raw: false} or not specifying the value will return the data along with the entire pg object with data such as row count, table statistics etc.
 
