@@ -26,7 +26,7 @@ else if(commander['db:migrate']){
 else if(commander['db:migrate:undo']){
   var fileName = undefined;
   if(commander["db:migrate:undo"] && commander["db:migrate:undo"] !== true) fileName = commander["db:migrate:undo"];
-  migrate.down(filename);
+  migrate.down(fileName);
 }
 
 else if(commander['model:create']){
