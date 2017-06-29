@@ -6,8 +6,8 @@ var model = require('../lib/model.js');
 commander
   .version('0.0.1')
   .option('migration:create [name]', 'Create a new Redshift migration')
-  .option('db:migrate', 'Run all migrations against your Redshift database')
-  .option('db:migrate:undo', 'Undo last migration against your Redshift database')
+  .option('db:migrate [name]', 'Run all migrations against your Redshift database')
+  .option('db:migrate:undo [name]', 'Undo last migration against your Redshift database')
   .option('model:create [name]', 'Create a new Redshift model')
   .parse(process.argv);
 
@@ -18,11 +18,15 @@ if(commander['migration:create']){
 }
 
 else if(commander['db:migrate']){
-  migrate.up();
+  var fileName = undefined;
+  if(commander["db:migrate"] && commander["db:migrate"] !== true) fileName = commander["db:migrate"];
+  migrate.up(fileName);
 }
 
 else if(commander['db:migrate:undo']){
-  migrate.down();
+  var fileName = undefined;
+  if(commander["db:migrate:undo"] && commander["db:migrate:undo"] !== true) fileName = commander["db:migrate:undo"];
+  migrate.down(filename);
 }
 
 else if(commander['model:create']){
