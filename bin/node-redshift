@@ -6,8 +6,8 @@ var model = require('../lib/model.js');
 commander
   .version('0.0.1')
   .option('migration:create [name]', 'Create a new Redshift migration')
-  .option('db:migrate [name]', 'Run all migrations against your Redshift database')
-  .option('db:migrate:undo [name]', 'Undo last migration against your Redshift database')
+  .option('db:migrate [name or number_of_migrations]', 'Run all or a number of migrations against your Redshift database')
+  .option('db:migrate:undo [name or number_of_migrations]', 'Undo all or a number of migrations against your Redshift database')
   .option('model:create [name]', 'Create a new Redshift model')
   .parse(process.argv);
 
