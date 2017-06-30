@@ -18,15 +18,15 @@ if(commander['migration:create']){
 }
 
 else if(commander['db:migrate']){
-  var fileName = undefined;
-  if(commander["db:migrate"] && commander["db:migrate"] !== true) fileName = commander["db:migrate"];
-  migrate.up(fileName);
+  var fileNameOrNumber = undefined;
+  if(commander["db:migrate"] && commander["db:migrate"] !== true) fileNameOrNumber = commander["db:migrate"];
+  migrate.up(fileNameOrNumber);
 }
 
 else if(commander['db:migrate:undo']){
-  var fileName = undefined;
-  if(commander["db:migrate:undo"] && commander["db:migrate:undo"] !== true) fileName = commander["db:migrate:undo"];
-  migrate.down(fileName);
+  var fileNameOrNumber = undefined;
+  if(commander["db:migrate:undo"] && commander["db:migrate:undo"] !== true) fileNameOrNumber = commander["db:migrate:undo"];
+  migrate.down(fileNameOrNumber);
 }
 
 else if(commander['model:create']){
