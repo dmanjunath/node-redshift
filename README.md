@@ -74,13 +74,11 @@ var redshiftClient = new Redshift(client, {rawConnection: true});
 Connection pooling works by default with no extra configuration. [Here's an example of connection pooling](https://github.com/dmanjunath/node-redshift/blob/master/examples/connection_pooling.js)
 
 ##### Setup Options
-There are two options that can be passed into the options object in the Redshift constructor.
+The Redshift constructor accepts an option object with the following properties:
 
-| Option                | Type          | Description                                                                       |
-| --------------------- |:-------------:| ---------------------------------------------------------------------------------:|
-| rawConnection         | Boolean       | If you want a raw connection, pass true with this option                          |
-| longStackTraces       | Boolean       | Default: true. If you want to disable [bluebird's longStackTraces](http://bluebirdjs.com/docs/api/promise.longstacktraces.html), pass in false   |
-
+| Option                | Type          | Description                                                                  |    
+| --------------------- |:-------------:| ---------------------------------------------------------------------------- |
+| rawConnection         | Boolean       | Default: false. Pass true to use a raw connection.                           |
 
 ## Usage
 
