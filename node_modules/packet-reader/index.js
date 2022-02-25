@@ -9,6 +9,7 @@ var Reader = module.exports = function(options) {
   this.offset = 0
   this.lastChunk = false
   this.chunk = null
+  this.chunkLength = 0
   this.headerSize = options.headerSize || 0
   this.lengthPadding = options.lengthPadding || 0
   this.header = null
@@ -16,25 +17,32 @@ var Reader = module.exports = function(options) {
 }
 
 Reader.prototype.addChunk = function(chunk) {
-  this.offset = 0
-  this.chunk = chunk
-  if(this.lastChunk) {
-    this.chunk = Buffer.concat([this.lastChunk, this.chunk])
-    this.lastChunk = false
+  if (!this.chunk || this.offset === this.chunkLength) {
+    this.chunk = chunk
+    this.chunkLength = chunk.length
+    this.offset = 0
+    return
   }
-}
 
-Reader.prototype._save = function() {
-  //save any unread chunks for next read
-  if(this.offset < this.chunk.length) {
-    this.lastChunk = this.chunk.slice(this.offset)
+  var newChunkLength = chunk.length
+  var newLength = this.chunkLength + newChunkLength
+
+  if (newLength > this.chunk.length) {
+    var newBufferLength = this.chunk.length * 2
+    while (newLength >= newBufferLength) {
+      newBufferLength *= 2
+    }
+    var newBuffer = new Buffer(newBufferLength)
+    this.chunk.copy(newBuffer)
+    this.chunk = newBuffer
   }
-  return false
+  chunk.copy(this.chunk, this.chunkLength)
+  this.chunkLength = newLength
 }
 
 Reader.prototype.read = function() {
-  if(this.chunk.length < (this.headerSize + 4 + this.offset)) {
-    return this._save()
+  if(this.chunkLength < (this.headerSize + 4 + this.offset)) {
+    return false
   }
 
   if(this.headerSize) {
@@ -45,9 +53,9 @@ Reader.prototype.read = function() {
   var length = this.chunk.readUInt32BE(this.offset + this.headerSize) + this.lengthPadding
 
   //next item spans more chunks than we have
-  var remaining = this.chunk.length - (this.offset + 4 + this.headerSize)
+  var remaining = this.chunkLength - (this.offset + 4 + this.headerSize)
   if(length > remaining) {
-    return this._save()
+    return false
   }
 
   this.offset += (this.headerSize + 4)

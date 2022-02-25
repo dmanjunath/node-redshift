@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * Copyright (c) 2010-2017 Brian Carlson (brian.m.carlson@gmail.com)
  * All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
@@ -57,6 +57,7 @@ var ConnectionParameters = function(config) {
   this.binary = val('binary', config);
   this.ssl = typeof config.ssl === 'undefined' ? useSsl() : config.ssl;
   this.client_encoding = val("client_encoding", config);
+  this.replication = val("replication", config);
   //a domain socket begins with '/'
   this.isDomainSocket = (!(this.host||'').indexOf('/'));
 
@@ -64,10 +65,15 @@ var ConnectionParameters = function(config) {
   this.fallback_application_name = val('fallback_application_name', config, false);
 };
 
+// Convert arg to a string, surround in single quotes, and escape single quotes and backslashes
+var quoteParamValue = function(value) {
+  return "'" + ('' + value).replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
+};
+
 var add = function(params, config, paramName) {
   var value = config[paramName];
   if(value) {
-    params.push(paramName+"='"+value+"'");
+    params.push(paramName + "=" + quoteParamValue(value));
   }
 };
 
@@ -79,21 +85,30 @@ ConnectionParameters.prototype.getLibpqConnectionString = function(cb) {
   add(params, this, 'application_name');
   add(params, this, 'fallback_application_name');
 
+  var ssl = typeof this.ssl === 'object' ? this.ssl : {sslmode: this.ssl};
+  add(params, ssl, 'sslmode');
+  add(params, ssl, 'sslca');
+  add(params, ssl, 'sslkey');
+  add(params, ssl, 'sslcert');
+  
   if(this.database) {
-    params.push("dbname='" + this.database + "'");
+    params.push("dbname=" + quoteParamValue(this.database));
+  }
+  if(this.replication) {
+    params.push("replication=" + quoteParamValue(this.replication));
   }
   if(this.host) {
-    params.push("host=" + this.host);
+    params.push("host=" + quoteParamValue(this.host));
   }
   if(this.isDomainSocket) {
     return cb(null, params.join(' '));
   }
   if(this.client_encoding) {
-    params.push("client_encoding='" + this.client_encoding + "'");
+    params.push("client_encoding=" + quoteParamValue(this.client_encoding));
   }
   dns.lookup(this.host, function(err, address) {
     if(err) return cb(err, null);
-    params.push("hostaddr=" + address);
+    params.push("hostaddr=" + quoteParamValue(address));
     return cb(null, params.join(' '));
   });
 };

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * Copyright (c) 2010-2017 Brian Carlson (brian.m.carlson@gmail.com)
  * All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
@@ -45,6 +45,8 @@ var Client = module.exports = function(config) {
   //a hash to hold named queries
   this.namedQueries = {};
 };
+
+Client.Query = NativeQuery;
 
 util.inherits(Client, EventEmitter);
 
@@ -139,6 +141,35 @@ Client.prototype.query = function(config, values, callback) {
   return query;
 };
 
+var DeprecatedQuery = require('../utils').deprecateEventEmitter(NativeQuery);
+
+//send a query to the server
+//this method is highly overloaded to take
+//1) string query, optional array of parameters, optional function callback
+//2) object query with {
+//    string query
+//    optional array values,
+//    optional function callback instead of as a separate parameter
+//    optional string name to name & cache the query plan
+//    optional string rowMode = 'array' for an array of results
+//  }
+Client.prototype.query = function(config, values, callback) {
+  if (typeof config.submit == 'function') {
+    // accept query(new Query(...), (err, res) => { }) style
+    if (typeof values == 'function') {
+      config.callback = values;
+    }
+    this._queryQueue.push(config);
+    this._pulseQueryQueue();
+    return config;
+  }
+
+  var query = new DeprecatedQuery(config, values, callback);
+  this._queryQueue.push(query);
+  this._pulseQueryQueue();
+  return query;
+};
+
 //disconnect from the backend server
 Client.prototype.end = function(cb) {
   var self = this;
@@ -178,9 +209,11 @@ Client.prototype._pulseQueryQueue = function(initialConnection) {
   this._activeQuery = query;
   query.submit(this);
   var self = this;
-  query.once('_done', function() {
+  var pulseOnDone = function() {
     self._pulseQueryQueue();
-  });
+    query.removeListener('_done', pulseOnDone);
+  };
+  query._on('_done', pulseOnDone);
 };
 
 //attempt to cancel an in-progress query

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * Copyright (c) 2010-2017 Brian Carlson (brian.m.carlson@gmail.com)
  * All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
@@ -11,15 +11,15 @@ var util = require('util');
 var utils = require('../utils');
 var NativeResult = require('./result');
 
-var NativeQuery = module.exports = function(native) {
+var NativeQuery = module.exports = function(config, values, callback) {
   EventEmitter.call(this);
-  this.native = native;
-  this.text = null;
-  this.values = null;
-  this.name = null;
-  this.callback = null;
+  config = utils.normalizeQueryConfig(config, values, callback);
+  this.text = config.text;
+  this.values = config.values;
+  this.name = config.name;
+  this.callback = config.callback;
   this.state = 'new';
-  this._arrayMode = false;
+  this._arrayMode = config.rowMode == 'array';
 
   //if the 'row' event is listened for
   //then emit them as they come in
@@ -27,29 +27,50 @@ var NativeQuery = module.exports = function(native) {
   //this has almost no meaning because libpq
   //reads all rows into memory befor returning any
   this._emitRowEvents = false;
-  this.on('newListener', function(event) {
+  this._on('newListener', function(event) {
     if(event === 'row') this._emitRowEvents = true;
   }.bind(this));
 };
 
 util.inherits(NativeQuery, EventEmitter);
 
+// TODO - remove in 7.0
+// this maintains backwards compat so someone could instantiate a query
+// manually: `new Query().then()`...
+NativeQuery._on = NativeQuery.on;
+NativeQuery._once = NativeQuery.once;
+
+
 NativeQuery.prototype.then = function(onSuccess, onFailure) {
-  return this.promise().then(onSuccess, onFailure);
+  return this._getPromise().then(onSuccess, onFailure);
 };
 
 NativeQuery.prototype.catch = function(callback) {
-  return this.promise().catch(callback);
+  return this._getPromise().catch(callback);
 };
 
-NativeQuery.prototype.promise = function() {
+NativeQuery.prototype._getPromise = function() {
   if (this._promise) return this._promise;
   this._promise = new Promise(function(resolve, reject) {
-    this.once('end', resolve);
-    this.once('error', reject);
+    var onEnd = function (result) {
+      this.removeListener('error', onError);
+      this.removeListener('end', onEnd);
+      resolve(result);
+    };
+    var onError = function (err) {
+      this.removeListener('error', onError);
+      this.removeListener('end', onEnd);
+      reject(err);
+    };
+    this._on('end', onEnd);
+    this._on('error', onError);
   }.bind(this));
   return this._promise;
 };
+
+NativeQuery.prototype.promise = util.deprecate(function() {
+  return this._getPromise();
+}, 'Query.promise() is deprecated - see the upgrade guide at https://node-postgres.com/guides/upgrading');
 
 NativeQuery.prototype.handleError = function(err) {
   var self = this;
@@ -71,6 +92,7 @@ NativeQuery.prototype.handleError = function(err) {
 NativeQuery.prototype.submit = function(client) {
   this.state = 'running';
   var self = this;
+  self.native = client.native;
   client.native.arrayMode = this._arrayMode;
 
   var after = function(err, rows) {

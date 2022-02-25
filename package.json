@@ -4,11 +4,19 @@
   "description": "A simple collection of tools to help you get started with Amazon Redshift from node.js",
   "main": "index.js",
   "dependencies": {
-    "bluebird": "^3.5.0",
+    "bluebird": "^3.7.2",
+    "body-parser": "^1.19.2",
     "commander": "^2.9.0",
-    "migrate": "^0.2.2",
-    "pg": "^6.1.2",
-    "sql-bricks": "^1.2.3"
+    "express": "^4.17.3",
+    "fs": "*",
+    "migrate": "^0.2.4",
+    "nodemon": "^2.0.15",
+    "path": "^0.12.7",
+    "pg": "^6.4.2",
+    "pg-promise": "^10.11.1",
+    "pgpass": "^1.0.5",
+    "sql-bricks": "^1.2.3",
+    "underscore": "^1.13.2"
   },
   "repository": {
     "type": "git",
@@ -16,6 +24,7 @@
   },
   "devDependencies": {},
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

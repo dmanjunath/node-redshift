@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * Copyright (c) 2010-2017 Brian Carlson (brian.m.carlson@gmail.com)
  * All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
@@ -27,7 +27,7 @@ var PG = function(clientConstructor) {
 
 util.inherits(PG, EventEmitter);
 
-PG.prototype.end = function() {
+PG.prototype.end = util.deprecate(function() {
   var self = this;
   var keys = Object.keys(this._pools);
   var count = keys.length;
@@ -47,14 +47,13 @@ PG.prototype.end = function() {
       });
     });
   }
-};
+}, 'PG.end is deprecated - please see the upgrade guide at https://node-postgres.com/guides/upgrading');
 
-PG.prototype.connect = function(config, callback) {
+PG.prototype.connect = util.deprecate(function(config, callback) {
   if(typeof config == "function") {
     callback = config;
     config = null;
   }
-  var poolName = JSON.stringify(config || {});
   if (typeof config == 'string') {
     config = new ConnectionParameters(config);
   }
@@ -66,6 +65,7 @@ PG.prototype.connect = function(config, callback) {
   config.idleTimeoutMillis = config.idleTimeoutMillis || config.poolIdleTimeout || defaults.poolIdleTimeout;
   config.log = config.log || config.poolLog || defaults.poolLog;
 
+  var poolName = JSON.stringify(config);
   this._pools[poolName] = this._pools[poolName] || new this.Pool(config);
   var pool = this._pools[poolName];
   if(!pool.listeners('error').length) {
@@ -75,10 +75,10 @@ PG.prototype.connect = function(config, callback) {
     }.bind(this));
   }
   return pool.connect(callback);
-};
+}, 'PG.connect is deprecated - please see the upgrade guide at https://node-postgres.com/guides/upgrading');
 
 // cancel the query running on the given client
-PG.prototype.cancel = function(config, client, query) {
+PG.prototype.cancel = util.deprecate(function(config, client, query) {
   if(client.native) {
     return client.cancel(query);
   }
@@ -89,7 +89,7 @@ PG.prototype.cancel = function(config, client, query) {
   }
   var cancellingClient = new this.Client(c);
   cancellingClient.cancel(client, query);
-};
+}, 'PG.cancel is deprecated - use client.cancel instead');
 
 if(typeof process.env.NODE_PG_FORCE_NATIVE != 'undefined') {
   module.exports = new PG(require('./native'));
