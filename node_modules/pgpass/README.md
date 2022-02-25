@@ -1,6 +1,6 @@
 # pgpass
 
-[![Build Status](https://travis-ci.org/hoegaarden/pgpass.png?branch=master)](https://travis-ci.org/hoegaarden/pgpass)
+[![Build Status](https://github.com/hoegaarden/pgpass/workflows/CI/badge.svg?branch=master)](https://github.com/hoegaarden/pgpass/actions?query=workflow%3ACI+branch%3Amaster)
 
 ## Install
 
@@ -34,7 +34,7 @@ Cases where `undefined` is returned:
 - for non windows systems: the file is write-/readable by the group or by other users
 - there is no matching line for the given connection info
 
-There should be no need to use this module directly; it is already included in `node-postgresq`.
+There should be no need to use this module directly; it is already included in `node-postgres`.
 
 ## Configuration
 
@@ -54,7 +54,7 @@ You can see the coverage report in `coverage.html`.
 
 ## Development, Patches, Bugs, ...
 
-If you find Bugs or have improvments, please feel free to open a issue on github. If you provide a pull request, I'm more than happy to merge them, just make sure to add tests for your changes.
+If you find Bugs or have improvements, please feel free to open a issue on GitHub. If you provide a pull request, I'm more than happy to merge them, just make sure to add tests for your changes.
 
 ## Links
 

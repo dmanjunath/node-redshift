@@ -1,10 +1,12 @@
 /**
- * Copyright (c) 2010-2016 Brian Carlson (brian.m.carlson@gmail.com)
+ * Copyright (c) 2010-2017 Brian Carlson (brian.m.carlson@gmail.com)
  * All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
  * README.md file in the root directory of this source tree.
  */
+
+var util = require('util');
 
 var defaults = require('./defaults');
 
@@ -30,6 +32,9 @@ function arrayString(val) {
     }
     else if(Array.isArray(val[i])) {
       result = result + arrayString(val[i]);
+    }
+    else if(val[i] instanceof Buffer) {
+      result += '\\\\x' + val[i].toString('hex');
     }
     else
     {
@@ -137,11 +142,26 @@ function normalizeQueryConfig (config, values, callback) {
   return config;
 }
 
+var queryEventEmitterOverloadDeprecationMessage = 'Using the automatically created return value from client.query as an event emitter is deprecated and will be removed in pg@7.0. Please see the upgrade guide at https://node-postgres.com/guides/upgrading';
+
+var deprecateEventEmitter = function(Emitter) {
+  var Result = function () {
+    Emitter.apply(this, arguments);
+  };
+  util.inherits(Result, Emitter);
+  Result.prototype._on = Result.prototype.on;
+  Result.prototype._once = Result.prototype.once;
+  Result.prototype.on = util.deprecate(Result.prototype.on, queryEventEmitterOverloadDeprecationMessage);
+  Result.prototype.once = util.deprecate(Result.prototype.once, queryEventEmitterOverloadDeprecationMessage);
+  return Result;
+};
+
 module.exports = {
   prepareValue: function prepareValueWrapper (value) {
     //this ensures that extra arguments do not get passed into prepareValue
     //by accident, eg: from calling values.map(utils.prepareValue)
     return prepareValue(value);
   },
-  normalizeQueryConfig: normalizeQueryConfig
+  normalizeQueryConfig: normalizeQueryConfig,
+  deprecateEventEmitter: deprecateEventEmitter,
 };
