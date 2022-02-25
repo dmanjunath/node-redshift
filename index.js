@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const path = require('path');
 
 module.exports = require('./lib/connection.js');
+module.exports = require('./lib/test_one.js');
 // module.exports.query = require('./lib/query.js');
 // module.exports.model = require('./lib/model.js');
 // module.exports.import = require('./lib/model.js').import;
