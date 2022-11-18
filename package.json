@@ -1,13 +1,13 @@
 {
-  "name": "node-redshift",
-  "version": "0.1.5",
+  "name": "node-redshift-connector",
+  "version": "0.1.0",
   "description": "A simple collection of tools to help you get started with Amazon Redshift from node.js",
   "main": "index.js",
   "dependencies": {
     "bluebird": "^3.5.0",
     "commander": "^2.9.0",
     "migrate": "^0.2.2",
-    "pg": "^6.1.2",
+    "pg": "^8.1.5",
     "sql-bricks": "^1.2.3"
   },
   "repository": {
@@ -27,6 +27,6 @@
   "bin": {
     "node-redshift": "./bin/node-redshift"
   },
-  "author": "Dheeraj Manjunath @dmanjunath",
+  "author": "Mohammed Noman Razvi @noman55",
   "license": "MIT"
 }
